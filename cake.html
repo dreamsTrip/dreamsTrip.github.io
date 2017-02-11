@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>基于Konva框架的canvas饼状图（面向对象）</title>
+	</head>
+	<body>
+		<div id="demo"></div>
+	     <script src="js/konva.js"></script> <!--konva框架-->
+	     <script src="js/cake.js"></script> 
+	     <script>
+	     	var stage=new Konva.Stage({//舞台
+	     		container:demo,
+	     		width:window.innerWidth,
+	     		height:window.innerHeight
+	     	})
+	     	var layer = new Konva.Layer() //幕布（层）
+	     	stage.add(layer);
+      	var data = [    //饼状图的数据
+	    	{ name: "前端", value: .25, color: '#e0e'  },
+	    	{ name: "php",  value: .2,  color: 'orange'},
+	    	{ name: "UI",	value: .3,	color: 'blue'  },
+			{ name: "C++",	value: .05,	color: 'green' },
+			{ name: "游戏",	value: .1,	color: 'purple'},
+			{ name: "Java",	value: .1,	color: 'red'   }
+		];
+		var width = stage.width()/2; ///舞台的一半
+		var height = stage.height()/2;
+        var cake = new Cake({
+        	    data:data,
+            	x:width,  //舞台的一半位置作为横坐标中点
+            	y:height,
+            	outCirRadius:200, //外圆半径
+            	inCirRadius:190,  //内圆半径
+            	outCirColor:'#e0e0e0' //外圆边框颜色
+            })
+	     	cake.addLayerOrGroup(layer) //传递Layer参数 将组织添加到层中 也可以组织添加组织
+	     	cake.moveTo()  //调用动画
+	     	layer.draw() 
+	     	</script>
+	     	
+	</body>
+</html>

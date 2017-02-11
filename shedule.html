@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>基于Konva的canvas进度条（面向对象）</title>
+	</head>
+
+	<body>
+		<div id="demo"></div>
+	<script src="js/konva.js"></script> <!--konva框架-->
+	<script src="js/schedule.js"></script>
+	<script >
+		var stage=new Konva.Stage({  //通过konva框架创建舞台
+			container:demo,  //舞台容器
+			width:window.innerWidth, //将window的宽作为舞台的宽度
+			height:window.innerHeight
+		})
+		var layer=new Konva.Layer(); //创建一个幕布 （层）
+		stage.add(layer); //将层添加到舞台中  （固定写法）
+		
+
+         var schedule=new Schedule({ //这是自定义面向对象进度条scedule.js
+         	x: 1/8 * stage.width(),    ///1/8舞台宽的位置作为横坐标起点
+         	y: 1/2 * stage.height(),
+         	outerWidth: 3/4 * stage.width(), ///外圆宽
+         	h: 1/16 * stage.width(),  ///高度
+         	stroke:'green', //边框颜色
+         	outerRadius:10, //外部矩形圆角度数
+         	innerRadius:10, //内部
+         	fill:'blue',    //填充颜色
+         	
+         	txt:'正在努力加载中0%',
+         	fontSize:20 //文字大小
+         	
+         })
+         schedule.addLayerOrGroup(layer); //传层layer 用于将组织添加到层中
+	
+		var imgArr=['1.png','2.png','3.png','4.png'] //加载图片数据路径
+		var loadImg=0 //一开始加载0张图片
+		imgArr.forEach(function(item,index){
+			var img=new Image();
+			img.src='img/'+ imgArr[index];
+			img.onload=function(){
+				loadImg++; //j加载图片
+			}
+		
+		})
+		var time=setInterval(function(){
+				if(loadImg >= imgArr.length){ //当加载图片的数量大于 图片数组长度时
+					clearInterval(time)  //取消定时器
+				}
+			schedule.changeVal(loadImg / imgArr.length)
+			},1000)
+		layer.draw();//层绘画
+	</script>
+		
+	</body>
+</html>

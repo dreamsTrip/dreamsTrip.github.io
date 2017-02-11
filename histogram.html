@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>基于Konva的canvas柱状图（面向过程）</title>
+	</head>
+	<body>
+		<div id="demo"></div>
+		<script src="js/konva.js"></script> <!--konva框架-->
+		<script>var stage = new Konva.Stage({
+	container: demo,  //舞台容器
+	width: window.innerWidth,  //舞台宽
+	height: window.innerHeight  //高
+})
+var layer = new Konva.Layer()   //层 （幕布）
+stage.add(layer);  //舞台添加幕布
+var line = new Konva.Line({   //画线条
+	x: 1 / 8 * stage.width(),   ///位置横坐标
+	y: 3 / 4 * stage.height(),
+
+	points: [0, 0, 3/4*stage.width(),0],  ///实际画线 
+	stroke: 'red',    //填充
+	tension: 1
+})
+var data = [
+      {name: '前端',value: '.8',color: 'green'}, 
+      {name: 'php',value: '.3',color: 'blue'}, 
+      {name: 'java',value: '.7',color: 'red'},
+      {name: 'UI',value: '.9',color: 'orange'},
+      {name: 'IOS',value: '.4',color: 'purple'},
+      {name: 'Android',value: '.9',color: 'pink'}
+   ]
+var group=new Konva.Group({  //创建一个组容纳矩形
+	x:1/8 * stage.width(),
+	y:3/4 * stage.height()
+
+})
+var maxHeight =1/2 * stage.height();  ///设置矩形最大高度
+var width = stage.width() * 3/4  / data.length;  //设置每个矩形所占空间平均宽度
+//console.log(maxHeight);
+//console.log(width)
+data.forEach(function(item,index){   //遍历所有data数据  item代表具体实际对象 index代表下标
+	var rect = new Konva.Rect({
+		x:(1/4+index)*width,     //矩形的横坐标
+		y:-maxHeight*item.value,  //纵坐标
+		width:1/2*width,           ///矩形的宽度 占 自己空间的一半
+		height:maxHeight*item.value,    //每个矩形所占的高度
+		fill:item.color,  //填充颜色
+		cornerRadius:10,  //圆角
+		name:'rect'  //每个矩形命名为rect
+		
+	})
+	group.add(rect); //添加到组中
+	var upText = new Konva.Text({//上方文字 80%,30%,7...
+		x:(1/4+index)*width,  //起始横坐标位置 位于1/4的宽
+		y:-maxHeight*item.value-20,  //y坐标为负的
+		//文字宽度 占一半的宽
+		width:1/2*width,  
+		align:'center', //
+		text:item.value*100+"%",
+		fontSize:20,
+		fill:item.color,
+		name:'text'
+	})
+	group.add(upText);
+	var downText = new Konva.Text({//下方文字 Php java ...
+		x:(1/4+index)*width+15,
+		y:0,
+		width:1/2*width,
+		align:'center',
+		text:item.name,
+		fontSize:20,
+		fill:item.color, //填充
+		rotation:30  //旋转
+		
+	})
+	group.add(downText);
+})
+function moveTo(){ //动画函数
+   var rectArr = group.find('.rect'); //获取每个矩形
+// console.log(rectArr.length)
+   rectArr.forEach(function(item,index){ //遍历每个矩形
+   	   var oldH = item.height(); //获取每个矩形原来的高度
+   	    item.height(0);  //再把高度设为0
+   	    var oldY = item.y(); //获取原来y坐标位置
+   	    item.y(0)//设为0
+   	   item.to({
+   	      y:oldY, 
+   	   	  height:oldH, //这样动画就会从0到原来的高度 呈现出来
+   	   	  duration:1 //过渡1秒
+   	   })
+   })
+   var textArr = group.find('.text'); //找到所有上方文字
+   textArr.forEach(function(item,index){
+   	  var oldH = item.height();   //获取矩形的高度
+   	  
+   	  var oldY = item.y();    //获取矩形y坐标
+   	  item.y(-item.fontSize());   //设置矩形的y坐标
+   	  	
+   	  item.to({  //动画
+   	  	 y:oldY,  
+   	  	 duration:1
+   	  })
+   })
+}
+
+layer.add(group) //将组添加到层中
+layer.add(line)  //将线条添加到层中
+layer.draw() //每个层都要进行绘画
+moveTo() //启动动画
+stage.on('contentClick',function(){ //每次点击都会做一次动画
+   moveTo()
+})
+		</script>
+	</body>
+</html>
